@@ -2,6 +2,7 @@
 import argparse
 from urllib import request
 from urllib.error import URLError
+import time
 
 
 class Parser:
@@ -12,6 +13,8 @@ class Parser:
         self.stop_idx = 0
         self.cache_file = ''
         self.extension = '.pdf'
+        self.sleep_after = -1
+        self.sleep_time = 0
 
         parser = argparse.ArgumentParser()
 
@@ -19,12 +22,16 @@ class Parser:
         parser.add_argument('--start', help="start index", required=False)
         parser.add_argument('--stop', help="stop index", required=False)
         parser.add_argument('--cache', help='download cache file')
+        parser.add_argument('--sleep-after', help='sleep for some time after N downloads', required=False, type=int, default=-1)
+        parser.add_argument('--sleep-time', help="sleep time", required=False, default=-1, type=int)
         args = parser.parse_args()
 
         self.url = args.url
         self.start_idx = args.start
         self.stop_idx = args.stop
         self.cache_file = args.cache
+        self.sleep_time = args.sleep_time
+        self.sleep_after = args.sleep_after
 
 
 class Cache:
@@ -62,18 +69,22 @@ class Downloader:
         self.cache = chc
 
     def run(self):
-        for file_id in range(int(self.parser.start_idx), int(self.parser.stop_idx)+1):
+        for file_id in range(int(self.parser.start_idx), int(self.parser.stop_idx) + 1):
             if not self.cache.is_idx_in_cache(file_id):
                 url = self.parser.url + str(file_id) + self.parser.extension
                 print('Downloading:', url)
                 try:
-                    request.urlretrieve(url=url, filename=str(file_id)+self.parser.extension)
+                    request.urlretrieve(url=url, filename=str(file_id) + self.parser.extension)
                     self.cache.append_to_cache(idx=file_id)
                     print("Success")
                 except URLError:
                     print("Failed")
 
+            if self.parser.sleep_after > 0 and file_id % self.parser.sleep_after == 0:
 
+                if self.parser.sleep_time > 0:
+                    print("Sleeping for:", self.parser.sleep_time)
+                    time.sleep(self.parser.sleep_time)
 class App:
 
     def __init__(self):
@@ -86,7 +97,7 @@ class App:
         self.downloader.run()
         self.cache.save_to_dsk()
 
-# TODO: Interact with kill signal, cache size
+# TODO: Create cache file if not exist
 
 if __name__ == '__main__':
     App = App()
