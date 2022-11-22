@@ -84,7 +84,7 @@ class App:
 
     def run(self):
         self.downloader.run()
-
+        self.cache.save_to_dsk()
 
 # TODO: Interact with kill signal, cache size
 
