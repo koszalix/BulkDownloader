@@ -44,7 +44,7 @@ class Cache:
             f.writelines(self.to_save)
 
     def append_to_cache(self, idx):
-        self.to_save.append(str(idx))
+        self.to_save.append(str(idx) + '\n')
         if len(self.to_save) >= 10:
             self.save_to_dsk()
 
