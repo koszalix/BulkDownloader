@@ -3,7 +3,7 @@ import argparse
 from urllib import request
 from urllib.error import URLError
 import time
-
+import os.path
 
 class Parser:
 
@@ -49,8 +49,13 @@ class Cache:
         self.to_save = []
 
     def read_from_dsk(self):
+        if not os.path.isfile(self.cache_file):
+            with open(self.cache_file, 'x') as f:
+                print("created cache file")
+
         with open(self.cache_file, 'r') as f:
             self.saved_idx = f.readlines()
+
         self.saved_idx = [n.replace('\n', '') for n in self.saved_idx]
 
     def save_to_dsk(self):
@@ -109,9 +114,6 @@ class App:
     def run(self):
         self.downloader.run()
         self.cache.save_to_dsk()
-
-
-# TODO: Create cache file if not exist
 
 
 if __name__ == '__main__':
