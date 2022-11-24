@@ -22,7 +22,8 @@ class Parser:
         parser.add_argument('--start', help="start index", required=False)
         parser.add_argument('--stop', help="stop index", required=False)
         parser.add_argument('--cache', help='download cache file')
-        parser.add_argument('--sleep-after', help='sleep for some time after N downloads', required=False, type=int, default=-1)
+        parser.add_argument('--sleep-after', help='sleep for some time after N downloads', required=False, type=int,
+                            default=-1)
         parser.add_argument('--sleep-time', help="sleep time", required=False, default=-1, type=int)
         args = parser.parse_args()
 
@@ -85,6 +86,8 @@ class Downloader:
                 if self.parser.sleep_time > 0:
                     print("Sleeping for:", self.parser.sleep_time)
                     time.sleep(self.parser.sleep_time)
+
+
 class App:
 
     def __init__(self):
@@ -98,6 +101,7 @@ class App:
         self.cache.save_to_dsk()
 
 # TODO: Create cache file if not exist
+
 
 if __name__ == '__main__':
     App = App()
