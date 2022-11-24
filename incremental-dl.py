@@ -15,16 +15,21 @@ class Parser:
         self.extension = '.pdf'
         self.sleep_after = -1
         self.sleep_time = 0
+        self.output_directory = ''
 
         parser = argparse.ArgumentParser()
 
         parser.add_argument('--url', help="url to download, with file name without extension and number")
+        parser.add_argument('--cache', help='download cache file')
+        parser.add_argument('--output-directory', help="", required=False, default='')
+
         parser.add_argument('--start', help="start index", required=False)
         parser.add_argument('--stop', help="stop index", required=False)
-        parser.add_argument('--cache', help='download cache file')
+
         parser.add_argument('--sleep-after', help='sleep for some time after N downloads', required=False, type=int,
                             default=-1)
         parser.add_argument('--sleep-time', help="sleep time", required=False, default=-1, type=int)
+
         args = parser.parse_args()
 
         self.url = args.url
@@ -33,6 +38,7 @@ class Parser:
         self.cache_file = args.cache
         self.sleep_time = args.sleep_time
         self.sleep_after = args.sleep_after
+        self.output_directory = args.output_directory
 
 
 class Cache:
@@ -75,11 +81,15 @@ class Downloader:
                 url = self.parser.url + str(file_id) + self.parser.extension
                 print('Downloading:', url)
                 try:
-                    request.urlretrieve(url=url, filename=str(file_id) + self.parser.extension)
+                    request.urlretrieve(url=url, filename=self.parser.output_directory + '/' + str(
+                        file_id) + self.parser.extension)
                     self.cache.append_to_cache(idx=file_id)
                     print("Success")
                 except URLError:
                     print("Failed")
+                except FileNotFoundError:
+                    print("Output directory not found, must exit :( ")
+                    exit(-3)
 
             if self.parser.sleep_after > 0 and file_id % self.parser.sleep_after == 0:
 
@@ -99,6 +109,7 @@ class App:
     def run(self):
         self.downloader.run()
         self.cache.save_to_dsk()
+
 
 # TODO: Create cache file if not exist
 
