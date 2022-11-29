@@ -5,6 +5,7 @@ from urllib.error import URLError
 import time
 import os.path
 
+
 class Parser:
 
     def __init__(self):
